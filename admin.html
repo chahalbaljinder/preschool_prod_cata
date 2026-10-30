@@ -83,7 +83,15 @@ textarea { resize: vertical; min-height: 56px; }
     </aside>
   </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+// ⚠️ Replace these with your Supabase project values (or inject via your own env)
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 const tbody = document.getElementById('tbody');
 const form = document.getElementById('form');
 const msg = document.getElementById('msg');
@@ -93,7 +101,9 @@ const cancelBtn = document.getElementById('cancelBtn');
 const empty = document.getElementById('empty');
 
 function showMsg(text, kind) {
-  msg.textContent = text; msg.className = 'msg ' + kind; msg.style.display = 'block';
+  msg.textContent = text;
+  msg.className = 'msg ' + kind;
+  msg.style.display = 'block';
   setTimeout(() => { msg.style.display = 'none'; }, 4000);
 }
 
@@ -112,12 +122,22 @@ async function load() {
       <td>${p.cat}</td>
       <td>${p.price}</td>
       <td>${p.size || '—'}</td>
-      <td>
+      <td class="actions">
         <button class="btn btn-sm btn-primary" onclick="app.editProduct('${p.code}')">Edit</button>
         <button class="btn btn-sm btn-danger" onclick="app.deleteProduct('${p.code}')">Delete</button>
       </td>`;
     tbody.appendChild(tr);
   });
+}
+
+async function uploadImage(file) {
+  const fileName = `${Date.now()}-${Math.round(Math.random()*1e9)}${file.name}`;
+  const { error } = await supabaseClient.storage
+    .from('products')
+    .upload(fileName, file, { cacheControl: '3600', upsert: false });
+  if (error) throw error;
+  const { data } = supabaseClient.storage.from('products').getPublicUrl(fileName);
+  return data.publicUrl;
 }
 
 window.app = {
@@ -151,19 +171,41 @@ cancelBtn.onclick = () => {
 
 form.onsubmit = async (e) => {
   e.preventDefault();
-  const fd = new FormData();
-  fd.append('cat', document.getElementById('cat').value);
-  fd.append('code', document.getElementById('code').value);
-  fd.append('name', document.getElementById('name').value);
-  fd.append('size', document.getElementById('size').value);
-  fd.append('price', document.getElementById('price').value);
-  fd.append('notes', document.getElementById('notes').value);
+  const cat = document.getElementById('cat').value;
+  const code = document.getElementById('code').value;
+  const name = document.getElementById('name').value;
+  const size = document.getElementById('size').value;
+  const price = document.getElementById('price').value;
+  const notes = document.getElementById('notes').value;
   const file = document.getElementById('image').files[0];
-  if (file) fd.append('image', file);
+
+  let imgUrl = '';
+  if (file) {
+    imgUrl = await uploadImage(file);
+  } else if (editCode.value) {
+    const res = await fetch(`/api/products/${editCode.value}`);
+    const p = await res.json();
+    imgUrl = p.img;
+  }
+
+  const body = {
+    cat,
+    code,
+    name,
+    size,
+    price: Number(price) || 0,
+    img: imgUrl,
+    notes: notes.split(',').map(s => s.trim()).filter(Boolean)
+  };
   const isEdit = !!editCode.value;
   const url = isEdit ? `/api/products/${editCode.value}` : '/api/products';
+
   try {
-    const res = await fetch(url, { method: isEdit ? 'PUT' : 'POST', body: fd });
+    const res = await fetch(url, {
+      method: isEdit ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'failed');
     showMsg(isEdit ? 'Product updated.' : 'Product added.', 'ok');

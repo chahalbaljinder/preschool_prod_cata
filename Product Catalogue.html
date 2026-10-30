@@ -290,8 +290,12 @@ function burst(color, pts=14){
 
 let ALL=[], flat=[], cur=-1;
 
-fetch('assets/products.json').then(r=>r.json()).then(data=>{
+fetch('/api/products').then(r=>r.json()).then(data=>{
   ALL=data; build();
+}).catch(err=>{
+  console.error('Failed to load products', err);
+  const empty=document.getElementById('empty');
+  if(empty) empty.style.display='block';
 });
 
 function build(){

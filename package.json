@@ -1,15 +1,11 @@
 {
-  "name": "nyftaa-catalogue-backend",
-  "version": "1.0.0",
-  "description": "Light backend for Nyftaa product catalogue CRUD + image upload",
-  "main": "server.js",
+  "name": "nyftaa-catalogue",
+  "version": "2.0.0",
+  "description": "Nyftaa Product Catalogue 2026 — frontend + API on Vercel, database & images on Supabase",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "echo 'Deploy on Vercel. Use npm install locally if needed.'"
   },
   "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.18.2",
-    "multer": "^1.4.5-lts.1"
+    "@supabase/supabase-js": "^2.45.0"
   }
 }

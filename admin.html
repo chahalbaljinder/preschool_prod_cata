@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nyftaa · Product Admin</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f3f4f6; color: #111827; padding: 24px; }
+.maxw { max-width: 1100px; margin: 0 auto; }
+h1 { font-size: 22px; margin-bottom: 16px; letter-spacing: -.02em; }
+.grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+th { background: #f9fafb; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: .06em; color: #6b7280; }
+img.thumb { width: 44px; height: 44px; object-fit: cover; border-radius: 4px; border: 1px solid #d1d5db; background: #fff; }
+code { font-size: 12px; background: #f3f4f6; padding: 1px 4px; border-radius: 3px; color: #111827; }
+.btn { border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; }
+.btn-primary { background: #111827; color: #fff; }
+.btn-primary:hover { background: #374151; }
+.btn-danger { background: #fecaca; color: #991b1b; border: 1px solid #fca5a5; }
+.btn-danger:hover { background: #fca5a5; }
+.btn-sm { padding: 3px 7px; font-size: 11px; }
+.msg { padding: 8px 12px; border-radius: 6px; font-size: 13px; margin-bottom: 12px; display: none; }
+.msg.ok { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+.msg.err { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+.empty { text-align: center; padding: 40px; color: #6b7280; }
+form { background: #fff; padding: 18px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.08); display: grid; gap: 12px; position: sticky; top: 24px; }
+label { font-size: 12px; font-weight: 700; color: #374151; }
+input, select, textarea { width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px; }
+textarea { resize: vertical; min-height: 56px; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.actions { display: flex; gap: 8px; }
+.cancel { display: none; background: #e5e7eb; color: #374151; }
+.cancel:hover { background: #d1d5db; }
+@media (max-width: 768px) { .grid { grid-template-columns: 1fr; } form { position: static; } }
+</style>
+</head>
+<body>
+<div class="maxw">
+  <h1>Product Admin</h1>
+  <div id="msg" class="msg"></div>
+  <div class="grid">
+    <div>
+      <table>
+        <thead><tr><th>Image</th><th>Code</th><th>Name</th><th>Cat</th><th>Price (₹)</th><th>Size</th><th>Actions</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <p id="empty" class="empty" style="display:none">No products.</p>
+    </div>
+    <aside>
+      <form id="form">
+        <input type="hidden" id="editCode">
+        <label>Category</label>
+        <select id="cat">
+          <option value="furniture">furniture</option>
+          <option value="slides">slides</option>
+          <option value="rockers">rockers</option>
+          <option value="pools">pools</option>
+          <option value="playhouses">playhouses</option>
+          <option value="classroom_essentials">classroom_essentials</option>
+          <option value="other">other</option>
+          <option value="boards">boards</option>
+          <option value="flooring_games">flooring_games</option>
+          <option value="kids_gym">kids_gym</option>
+          <option value="outdoor_play">outdoor_play</option>
+          <option value="water_sports">water_sports</option>
+          <option value="wall_activity">wall_activity</option>
+          <option value="soft_play">soft_play</option>
+        </select>
+        <div class="row">
+          <div><label>Product Code</label><input id="code" placeholder="e.g. ABC_001"></div>
+          <div><label>Price</label><input id="price" type="number" min="0" step="1"></div>
+        </div>
+        <label>Name</label><input id="name">
+        <label>Size</label><input id="size" placeholder="e.g. 24&quot; × 24&quot; × 20&quot;">
+        <label>Notes (comma separated)</label><input id="notes" placeholder="4 colours available, Sturdy">
+        <label>Product Image</label><input type="file" id="image" accept="image/*">
+        <div class="actions">
+          <button type="submit" class="btn btn-primary" id="submitBtn">Save Product</button>
+          <button type="button" class="btn cancel" id="cancelBtn">Cancel</button>
+        </div>
+      </form>
+    </aside>
+  </div>
+</div>
+<script>
+const tbody = document.getElementById('tbody');
+const form = document.getElementById('form');
+const msg = document.getElementById('msg');
+const editCode = document.getElementById('editCode');
+const submitBtn = document.getElementById('submitBtn');
+const cancelBtn = document.getElementById('cancelBtn');
+const empty = document.getElementById('empty');
+
+function showMsg(text, kind) {
+  msg.textContent = text; msg.className = 'msg ' + kind; msg.style.display = 'block';
+  setTimeout(() => { msg.style.display = 'none'; }, 4000);
+}
+
+async function load() {
+  const res = await fetch('/api/products');
+  const products = await res.json();
+  tbody.innerHTML = '';
+  if (!products.length) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  products.forEach(p => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><img class="thumb" src="${p.img}" alt=""></td>
+      <td><code>${p.code}</code></td>
+      <td>${p.name}</td>
+      <td>${p.cat}</td>
+      <td>${p.price}</td>
+      <td>${p.size || '—'}</td>
+      <td>
+        <button class="btn btn-sm btn-primary" onclick="app.editProduct('${p.code}')">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="app.deleteProduct('${p.code}')">Delete</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+window.app = {
+  editProduct: async (code) => {
+    const res = await fetch(`/api/products/${code}`);
+    const p = await res.json();
+    editCode.value = p.code;
+    document.getElementById('cat').value = p.cat;
+    document.getElementById('code').value = p.code;
+    document.getElementById('name').value = p.name;
+    document.getElementById('size').value = p.size || '';
+    document.getElementById('price').value = p.price;
+    document.getElementById('notes').value = (p.notes || []).join(', ');
+    submitBtn.textContent = 'Update Product';
+    cancelBtn.style.display = 'inline-block';
+    form.scrollIntoView({ behavior: 'smooth' });
+  },
+  deleteProduct: async (code) => {
+    if (!confirm('Delete this product?')) return;
+    const res = await fetch(`/api/products/${code}`, { method: 'DELETE' });
+    if (!res.ok) { showMsg('Delete failed.', 'err'); return; }
+    showMsg('Product deleted.', 'ok');
+    load();
+  }
+};
+
+cancelBtn.onclick = () => {
+  form.reset(); editCode.value = '';
+  submitBtn.textContent = 'Save Product'; cancelBtn.style.display = 'none';
+};
+
+form.onsubmit = async (e) => {
+  e.preventDefault();
+  const fd = new FormData();
+  fd.append('cat', document.getElementById('cat').value);
+  fd.append('code', document.getElementById('code').value);
+  fd.append('name', document.getElementById('name').value);
+  fd.append('size', document.getElementById('size').value);
+  fd.append('price', document.getElementById('price').value);
+  fd.append('notes', document.getElementById('notes').value);
+  const file = document.getElementById('image').files[0];
+  if (file) fd.append('image', file);
+  const isEdit = !!editCode.value;
+  const url = isEdit ? `/api/products/${editCode.value}` : '/api/products';
+  try {
+    const res = await fetch(url, { method: isEdit ? 'PUT' : 'POST', body: fd });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'failed');
+    showMsg(isEdit ? 'Product updated.' : 'Product added.', 'ok');
+    form.reset(); editCode.value = '';
+    submitBtn.textContent = 'Save Product'; cancelBtn.style.display = 'none';
+    load();
+  } catch (err) {
+    showMsg(err.message, 'err');
+  }
+};
+
+load();
+</script>
+</body>
+</html>

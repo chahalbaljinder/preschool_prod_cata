@@ -86,11 +86,16 @@ textarea { resize: vertical; min-height: 56px; }
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// ⚠️ Replace these with your Supabase project values (or inject via your own env)
-const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+let supabaseClient = null;
 
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+async function initSupabase() {
+  const res = await fetch('/api/config');
+  const config = await res.json();
+  if (!config.supabaseUrl || !config.supabaseAnonKey) {
+    throw new Error('Supabase config not available. Set SUPABASE_URL and SUPABASE_ANON_KEY in Vercel env vars.');
+  }
+  supabaseClient = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+}
 
 const tbody = document.getElementById('tbody');
 const form = document.getElementById('form');
@@ -217,7 +222,10 @@ form.onsubmit = async (e) => {
   }
 };
 
-load();
+initSupabase().then(load).catch(err => {
+  showMsg(err.message, 'err');
+  console.error(err);
+});
 </script>
 </body>
 </html>

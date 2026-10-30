@@ -31,6 +31,8 @@ function writeProducts(products) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(products, null, 2), 'utf8');
 }
 
+app.get('/', (_req, res) => res.redirect('/admin.html'));
+
 app.get('/api/products', (_req, res) => {
   try { res.json(readProducts()); }
   catch (e) { res.status(500).json({ error: e.message }); }

@@ -1,5 +1,6 @@
 {
   "name": "nyftaa-catalogue",
+  "type": "module",
   "version": "2.0.0",
   "description": "Nyftaa Product Catalogue 2026 — frontend + API on Vercel, database & images on Supabase",
   "scripts": {

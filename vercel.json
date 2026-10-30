@@ -1,6 +1,7 @@
 {
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1.js" },
+    { "src": "/api/config", "dest": "/api/config.js" },
+    { "src": "/api/products", "dest": "/api/products.js" },
     { "src": "/assets/(.*)", "headers": { "Cache-Control": "public, max-age=31536000, immutable" }, "dest": "/assets/$1" },
     { "src": "/admin.html", "dest": "/admin.html" },
     { "src": "/(.*)", "dest": "/Product Catalogue.html" }

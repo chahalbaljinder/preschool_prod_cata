@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nyftaa · Product Catalogue 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FFF8EC;
+  --ink:#1F1A3D;
+  --ink-soft:#5B5578;
+  --red:#F2453D;
+  --yellow:#FFC93C;
+  --green:#3DBE6B;
+  --blue:#2F7BF0;
+  --pink:#FF7EB6;
+  --purple:#8B5CF6;
+  --navy:#1B2A6B;
+  --line:rgba(31,26,61,.12);
+  --display:'Baloo 2',system-ui,sans-serif;
+  --body:'Nunito Sans',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:100%}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+h1,h2,h3{font-family:var(--display);line-height:.95;letter-spacing:-.01em}
+
+/* ---------- NAV ---------- */
+.nav{position:sticky;top:0;z-index:40;background:rgba(255,248,236,.88);backdrop-filter:blur(12px);border-bottom:2px dashed var(--line)}
+.nav-in{max-width:1320px;margin:0 auto;display:flex;align-items:center;gap:18px;padding:12px 28px}
+.logo{height:44px;border-radius:10px}
+.chips{display:flex;gap:8px;flex:1;overflow-x:auto;scrollbar-width:none;padding:2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{white-space:nowrap;padding:9px 16px;border-radius:999px;font-weight:800;font-size:14px;border:2.5px solid var(--ink);background:#fff;transition:transform .2s cubic-bezier(.3,1.6,.5,1),background .2s,color .2s;box-shadow:0 3px 0 var(--ink)}
+.chip:hover{transform:translateY(-2px) rotate(-2deg)}
+.chip.on{background:var(--c,var(--ink));color:#fff}
+.chip .n{opacity:.6;margin-left:4px;font-weight:700}
+.search{position:relative;flex:0 0 230px}
+.search input{width:100%;padding:10px 14px 10px 38px;border-radius:999px;border:2.5px solid var(--ink);font:700 14px var(--body);background:#fff;outline:none;box-shadow:0 3px 0 var(--ink)}
+.search input:focus{box-shadow:0 3px 0 var(--ink),0 0 0 4px rgba(255,201,60,.6)}
+.search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%)}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;max-width:1320px;margin:0 auto;padding:56px 28px 40px;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.tag{display:inline-flex;align-items:center;gap:8px;background:var(--yellow);border:2.5px solid var(--ink);border-radius:999px;padding:6px 14px;font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;transform:rotate(-3deg);box-shadow:0 3px 0 var(--ink)}
+.hero h1{font-size:clamp(56px,8vw,118px);font-weight:800;margin:22px 0 18px}
+.hero h1 .w{display:inline-block;animation:bob 3.2s ease-in-out infinite}
+.hero h1 .w:nth-child(2){animation-delay:.2s}
+.hero h1 .w:nth-child(3){animation-delay:.4s}
+.hero h1 .w:nth-child(4){animation-delay:.6s}
+.c-red{color:var(--red)}.c-blue{color:var(--blue)}.c-green{color:var(--green)}.c-yel{color:#F5A700}.c-pink{color:var(--pink)}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(-1.5deg)}}
+.hero p.lede{font-size:19px;line-height:1.55;color:var(--ink-soft);max-width:520px;text-wrap:pretty}
+.cta-row{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:14px 24px;border-radius:999px;font-weight:800;font-size:16px;border:3px solid var(--ink);box-shadow:0 5px 0 var(--ink);transition:transform .15s,box-shadow .15s;text-decoration:none;color:var(--ink)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 7px 0 var(--ink)}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--ink)}
+.btn.red{background:var(--red);color:#fff}
+.btn.white{background:#fff}
+.hero-art{position:relative;aspect-ratio:1/1.05}
+.hero-photo{position:absolute;inset:4% 6% 0 6%;border-radius:46% 54% 42% 58%/52% 44% 56% 48%;overflow:hidden;border:4px solid var(--ink);box-shadow:12px 14px 0 var(--blue);animation:morph 12s ease-in-out infinite}
+.hero-photo img{width:100%;height:100%;object-fit:cover;object-position:center 30%}
+@keyframes morph{0%,100%{border-radius:46% 54% 42% 58%/52% 44% 56% 48%}50%{border-radius:56% 44% 54% 46%/44% 56% 44% 56%}}
+.ball{position:absolute;border-radius:50%;border:3px solid var(--ink);animation:float 5s ease-in-out infinite}
+.ball::after{content:"";position:absolute;width:30%;height:22%;left:22%;top:16%;border-radius:50%;background:rgba(255,255,255,.65);transform:rotate(-30deg)}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+.hero-sticker{position:absolute;right:-2%;bottom:6%;width:150px;height:150px;display:grid;place-items:center;text-align:center;animation:spin 18s linear infinite}
+.hero-sticker .inner{animation:spin 18s linear infinite reverse;font-family:var(--display);font-weight:800;color:#fff;line-height:.9;font-size:20px}
+.hero-sticker .inner b{display:block;font-size:46px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- MARQUEE ---------- */
+.marquee{background:var(--ink);color:var(--cream);overflow:hidden;transform:rotate(-1.5deg);margin:30px -20px 10px;border-block:3px solid var(--ink)}
+.marquee-track{display:flex;gap:36px;padding:14px 0;white-space:nowrap;animation:slide 30s linear infinite;width:max-content}
+.marquee span{font-family:var(--display);font-weight:700;font-size:26px;display:flex;align-items:center;gap:36px}
+.marquee i{width:14px;height:14px;border-radius:50%;display:inline-block}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+/* ---------- ABOUT ---------- */
+.about{max-width:1320px;margin:70px auto 0;padding:0 28px;display:grid;grid-template-columns:.8fr 1.2fr;gap:56px;align-items:center}
+.about-img{position:relative}
+.about-img img{border-radius:32px;border:4px solid var(--ink);box-shadow:-12px 12px 0 var(--pink);aspect-ratio:4/3;object-fit:cover;width:100%}
+.about-img .since{position:absolute;top:-22px;right:-18px;background:var(--green);color:#fff;border:3px solid var(--ink);border-radius:20px;padding:10px 16px;font-family:var(--display);font-weight:800;font-size:18px;transform:rotate(6deg);box-shadow:0 4px 0 var(--ink);line-height:1}
+.about-img .since b{font-size:34px;display:block}
+.about h2{font-size:clamp(40px,4.6vw,64px);margin-bottom:18px}
+.about p{font-size:17px;line-height:1.65;color:var(--ink-soft);margin-bottom:14px;text-wrap:pretty;max-width:640px}
+.pillars{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.pillars span{padding:8px 16px;border-radius:14px;font-weight:800;font-size:14px;border:2.5px solid var(--ink)}
+
+/* ---------- CATEGORY SECTIONS ---------- */
+.cat{max-width:1320px;margin:110px auto 0;padding:0 28px;scroll-margin-top:90px}
+.cat-head{position:relative;display:grid;grid-template-columns:1fr auto;align-items:end;gap:24px;padding:40px 44px;border-radius:40px;background:var(--c);color:#fff;border:4px solid var(--ink);box-shadow:0 10px 0 var(--ink);overflow:hidden;min-height:260px}
+.cat-head .bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:1}
+.cat-head .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--c) 30%,color-mix(in oklch,var(--c) 30%,transparent) 70%,transparent)}
+.cat-head > *:not(.bg){position:relative}
+.cat-num{font-family:var(--display);font-weight:800;font-size:18px;background:#fff;color:var(--ink);border:3px solid var(--ink);border-radius:999px;padding:4px 14px;display:inline-block;transform:rotate(-4deg);margin-bottom:14px}
+.cat-head h2{font-size:clamp(48px,6vw,92px);font-weight:800;text-shadow:0 4px 0 rgba(31,26,61,.35)}
+.cat-head p{font-size:18px;font-weight:700;margin-top:10px;opacity:.95}
+.cat-count{font-family:var(--display);font-weight:800;font-size:22px;background:var(--yellow);color:var(--ink);border:3px solid var(--ink);border-radius:20px;padding:10px 18px;transform:rotate(3deg);box-shadow:0 4px 0 var(--ink);text-align:center;line-height:1}
+.cat-count b{font-size:44px;display:block}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:26px;margin-top:44px}
+.card{position:relative;background:#fff;border:3px solid var(--ink);border-radius:30px;padding:16px 16px 18px;text-align:left;display:flex;flex-direction:column;box-shadow:0 6px 0 var(--ink);transition:transform .25s cubic-bezier(.3,1.6,.5,1),box-shadow .25s}
+.card:hover{transform:translateY(-6px) rotate(var(--tilt,-1deg));box-shadow:0 12px 0 var(--ink)}
+.card .stage{position:relative;aspect-ratio:1/0.86;border-radius:22px;background:var(--tint);display:grid;place-items:center;overflow:hidden}
+.card .stage::before{content:"";position:absolute;width:78%;aspect-ratio:1;border-radius:50%;background:#fff;opacity:.55;transition:transform .4s cubic-bezier(.3,1.6,.5,1)}
+.card:hover .stage::before{transform:scale(1.12)}
+.card .stage img{position:relative;width:84%;height:84%;object-fit:contain;filter:drop-shadow(0 10px 8px rgba(31,26,61,.18));transition:transform .4s cubic-bezier(.3,1.6,.5,1)}
+.card:hover .stage img{transform:scale(1.07) rotate(-2deg)}
+.price{position:absolute;top:-14px;right:-12px;width:92px;height:92px;display:grid;place-items:center;z-index:2;transition:transform .35s cubic-bezier(.3,1.6,.5,1)}
+.card:hover .price{transform:rotate(14deg) scale(1.06)}
+.price svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.price .t{position:relative;text-align:center;color:#fff;font-family:var(--display);line-height:.85}
+.price .t small{display:block;font-size:11px;font-weight:700;letter-spacing:.12em;opacity:.9}
+.price .t b{font-size:21px;font-weight:800}
+.price .t b.sm{font-size:18px}
+.card h3{font-size:24px;font-weight:700;margin:16px 4px 8px;line-height:1.02}
+.spec{display:grid;grid-template-columns:auto 1fr;gap:5px 10px;margin:0 4px;font-size:13.5px}
+.spec dt{font-weight:800;color:var(--ink-soft);text-transform:uppercase;font-size:11px;letter-spacing:.08em;padding-top:2px}
+.spec dd{font-weight:700}
+.notes{display:flex;flex-wrap:wrap;gap:6px;margin:12px 4px 0}
+.notes span{font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;background:var(--tint);border:1.5px solid var(--ink)}
+.dots{display:inline-flex;gap:3px;margin-right:5px;vertical-align:-1px}
+.dots i{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--ink)}
+
+.empty{display:none;text-align:center;padding:80px 20px;font-family:var(--display);font-size:32px;font-weight:700;color:var(--ink-soft)}
+
+/* ---------- FOOTER ---------- */
+footer{margin-top:130px;background:var(--navy);color:#fff;border-top:4px solid var(--ink);position:relative}
+.wave{position:absolute;top:-38px;left:0;width:100%;height:40px}
+.foot-in{max-width:1320px;margin:0 auto;padding:60px 28px 40px;display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap}
+footer h2{font-size:clamp(44px,6vw,84px);font-weight:800}
+footer h2 span{color:var(--yellow)}
+footer a.site{display:inline-block;margin-top:18px;font-weight:800;font-size:20px;color:var(--ink);background:var(--yellow);border:3px solid var(--ink);padding:12px 22px;border-radius:999px;text-decoration:none;box-shadow:0 5px 0 var(--ink)}
+.foot-note{font-size:14px;opacity:.75;max-width:340px;line-height:1.6}
+
+/* ---------- MODAL ---------- */
+.modal{position:fixed;inset:0;z-index:80;display:none;place-items:center;padding:24px;background:rgba(31,26,61,.55);backdrop-filter:blur(6px)}
+.modal.open{display:grid;animation:fade .2s}
+@keyframes fade{from{opacity:0}}
+.sheet{position:relative;width:min(980px,100%);max-height:92vh;overflow:auto;background:#fff;border:4px solid var(--ink);border-radius:36px;box-shadow:0 14px 0 var(--ink);display:grid;grid-template-columns:1.1fr .9fr;animation:pop .35s cubic-bezier(.3,1.5,.5,1)}
+@keyframes pop{from{transform:scale(.85) rotate(-2deg);opacity:0}}
+.sheet .big{background:var(--tint);display:grid;place-items:center;padding:40px;position:relative;min-height:440px}
+.sheet .big::before{content:"";position:absolute;width:70%;aspect-ratio:1;border-radius:50%;background:#fff;opacity:.55}
+.sheet .big img{position:relative;max-height:420px;object-fit:contain;filter:drop-shadow(0 16px 14px rgba(31,26,61,.2))}
+.sheet .info{padding:40px 36px;display:flex;flex-direction:column}
+.sheet .kicker{font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--c)}
+.sheet h3{font-size:44px;font-weight:800;margin:8px 0 22px}
+.sheet .mrp{display:flex;align-items:baseline;gap:10px;margin-bottom:24px}
+.sheet .mrp small{font-weight:800;font-size:14px;letter-spacing:.1em;color:var(--ink-soft)}
+.sheet .mrp b{font-family:var(--display);font-size:56px;font-weight:800;line-height:1;color:var(--c)}
+.sheet table{width:100%;border-collapse:collapse;font-size:16px}
+.sheet td{padding:12px 0;border-top:2px dashed var(--line)}
+.sheet td:first-child{font-weight:800;color:var(--ink-soft);font-size:12px;text-transform:uppercase;letter-spacing:.08em;width:110px}
+.sheet td:last-child{font-weight:700}
+.close{position:absolute;top:16px;right:16px;width:48px;height:48px;border-radius:50%;background:var(--yellow);border:3px solid var(--ink);box-shadow:0 3px 0 var(--ink);display:grid;place-items:center;z-index:3;transition:transform .2s}
+.close:hover{transform:rotate(90deg)}
+.navbtns{display:flex;gap:10px;margin-top:auto;padding-top:26px}
+.navbtns .btn{padding:10px 18px;font-size:14px}
+
+@media (max-width:900px){
+  .hero,.about{grid-template-columns:1fr}
+  .hero-art{max-width:460px;margin:0 auto;width:100%}
+  .search{flex-basis:160px}
+  .sheet{grid-template-columns:1fr}
+  .sheet .big{min-height:300px}
+  .cat-head{grid-template-columns:1fr;padding:30px 26px}
+  .nav-in{flex-wrap:wrap}
+  .chips{order:3;flex-basis:100%}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-in">
+    <img class="logo" src="assets/logo.png" alt="Nyftaa">
+    <div class="chips" id="chips"></div>
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1F1A3D" stroke-width="3" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Find a toy or code…">
+    </label>
+  </div>
+</nav>
+
+<header class="hero" data-screen-label="01 Hero">
+  <div>
+    <span class="tag">★ Product Catalogue 2026</span>
+    <h1><span class="w c-red">Best</span> <span class="w c-blue">for</span><br><span class="w c-green">kids</span><span class="w c-yel">!</span></h1>
+    <p class="lede">Safe, sturdy, sunshine-bright play gear for schools, play zones and homes — tables, chairs, slides, swings, rockers and ball pools, all in one place.</p>
+    <div class="cta-row">
+      <a class="btn red" href="#furniture">Start exploring
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></a>
+      <a class="btn white" href="https://nyftaa.vercel.app" target="_blank" rel="noopener">nyftaa.com</a>
+    </div>
+  </div>
+  <div class="hero-art">
+    <div class="hero-photo"><img src="assets/kids-zone.jpg" alt="Kids playing on a balance bridge"></div>
+    <div class="ball" style="width:74px;height:74px;background:var(--red);top:0;left:2%"></div>
+    <div class="ball" style="width:46px;height:46px;background:var(--yellow);top:12%;right:4%;animation-delay:-1.5s"></div>
+    <div class="ball" style="width:58px;height:58px;background:var(--green);bottom:4%;left:-2%;animation-delay:-3s"></div>
+    <div class="ball" style="width:30px;height:30px;background:var(--pink);top:46%;left:-4%;animation-delay:-2.2s"></div>
+    <div class="hero-sticker" id="heroSticker"><div class="inner"><b id="heroCount">96</b>toys<br>inside</div></div>
+  </div>
+</header>
+
+<div class="marquee" aria-hidden="true"><div class="marquee-track" id="marquee"></div></div>
+
+<section class="about" data-screen-label="02 About">
+  <div class="about-img">
+    <img src="assets/classroom.jpg" alt="Classroom fitted with colourful desks">
+    <div class="since">since<b>2019</b></div>
+  </div>
+  <div>
+    <h2>Play that <span class="c-pink">lasts</span>,<br>joy that <span class="c-blue">grows</span>.</h2>
+    <p>Nyftaa, is proud to be a trusted name in the world of kids' toys — manufacturing, importing and wholesale trading of high-quality play products. Our goal has always been safe, durable, engaging toys that bring happiness to children and peace of mind to parents and educators.</p>
+    <p>We've helped transform schools, play zones and homes into joyful spaces where kids learn, explore and grow through play. We don't just make toys — we create experiences that nurture imagination and build happy childhood memories.</p>
+    <div class="pillars">
+      <span style="background:#FFE3E1">Safe</span>
+      <span style="background:#FFF1C7">Durable</span>
+      <span style="background:#DDF5E5">Engaging</span>
+      <span style="background:#DCE9FF">Tested</span>
+    </div>
+  </div>
+</section>
+
+<main id="catalogue"></main>
+<div class="empty" id="empty">No toys match that — try another word! 🎈</div>
+
+<footer>
+  <svg class="wave" viewBox="0 0 1440 40" preserveAspectRatio="none"><path d="M0 40 Q 60 0 120 20 T 240 20 T 360 20 T 480 20 T 600 20 T 720 20 T 840 20 T 960 20 T 1080 20 T 1200 20 T 1320 20 T 1440 20 V40Z" fill="#1B2A6B" stroke="#1F1A3D" stroke-width="4"/></svg>
+  <div class="foot-in">
+    <div>
+      <h2>Welcome to<br><span>Kids World.</span></h2>
+      <a class="site" href="https://nyftaa.vercel.app" target="_blank" rel="noopener">www.nyftaa.com →</a>
+    </div>
+    <p class="foot-note">All prices are MRP in Indian Rupees. Chair prices are per single chair unless stated. Sizes in inches (L × W × H).</p>
+  </div>
+</footer>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+  <div class="sheet" id="sheet">
+    <button class="close" id="close" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1F1A3D" stroke-width="3.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="big"><img id="mImg" alt=""></div>
+    <div class="info">
+      <div class="kicker" id="mCat"></div>
+      <h3 id="mName"></h3>
+      <div class="mrp"><small>MRP</small><b id="mPrice"></b></div>
+      <table><tbody id="mSpec"></tbody></table>
+      <div class="navbtns">
+        <button class="btn white" id="prev">← Prev</button>
+        <button class="btn white" id="next">Next →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const CATS = {
+  furniture:{title:'Classroom Furniture',blurb:'Tables, chairs & desks in happy colours',c:'#2F7BF0',tint:'#DCE9FF',bg:'assets/classroom.jpg'},
+  slides:{title:'Slides & Swings',blurb:'Whoosh, wheee & swing-a-ling',c:'#F2453D',tint:'#FFE3E1',bg:'assets/swing-kids.jpg'},
+  rockers:{title:'Rockers & Rides',blurb:'Rock, roll, pedal & see-saw',c:'#3DBE6B',tint:'#DDF5E5',bg:'assets/rocker-kid.jpg'},
+  pools:{title:'Fence & Ball Pool',blurb:'Splash into a sea of colourful balls',c:'#8B5CF6',tint:'#ECE4FF',bg:null},
+  playhouses:{title:'Playhouses',blurb:'Tents, dens & pretend-play homes',c:'#F5A700',tint:'#FFF1C7',bg:null},
+  classroom_essentials:{title:'Classroom Essentials',blurb:'Storage, mats & learning aids',c:'#FF7EB6',tint:'#FFE3E1',bg:null},
+  other:{title:'Other',blurb:'More play gear for every space',c:'#1F1A3D',tint:'#FFF8EC',bg:null},
+  boards:{title:'Boards',blurb:'Writing & drawing boards',c:'#8B5CF6',tint:'#ECE4FF',bg:null},
+  flooring_games:{title:'Flooring & Games',blurb:'Floor mats & indoor games',c:'#3DBE6B',tint:'#DDF5E5',bg:null},
+  kids_gym:{title:'Kids Gym',blurb:'Climb, balance & move',c:'#F2453D',tint:'#FFE3E1',bg:null},
+  outdoor_play:{title:'Outdoor Play',blurb:'Garden & playground gear',c:'#3DBE6B',tint:'#DDF5E5',bg:null},
+  water_sports:{title:'Water Sports',blurb:'Splash & play',c:'#2F7BF0',tint:'#DCE9FF',bg:null},
+  wall_activity:{title:'Wall Activity',blurb:'Mount-on-wall play panels',c:'#FF7EB6',tint:'#FFE3E1',bg:null},
+  soft_play:{title:'Soft Play',blurb:'Padded & cushioned play',c:'#F5A700',tint:'#FFF1C7',bg:null}
+};
+const BADGE = ['#F2453D','#2F7BF0','#3DBE6B','#FF7EB6','#8B5CF6','#F5A700'];
+const inr = n => '₹' + n.toLocaleString('en-IN');
+
+function burst(color, pts=14){
+  let d='';const R=46,r=39;
+  for(let i=0;i<pts*2;i++){const a=Math.PI*i/pts-Math.PI/2,rr=i%2?r:R;d+=(i?'L':'M')+(50+rr*Math.cos(a)).toFixed(2)+' '+(50+rr*Math.sin(a)).toFixed(2)}
+  return `<svg viewBox="0 0 100 100"><path d="${d}Z" fill="${color}" stroke="#1F1A3D" stroke-width="3" stroke-linejoin="round" transform="translate(0 3)" opacity=".9" style="fill:#1F1A3D"/><path d="${d}Z" fill="${color}" stroke="#1F1A3D" stroke-width="3" stroke-linejoin="round"/></svg>`;
+}
+
+let ALL=[], flat=[], cur=-1;
+
+fetch('assets/products.json').then(r=>r.json()).then(data=>{
+  ALL=data; build();
+});
+
+function build(){
+  document.getElementById('heroCount').textContent = ALL.length;
+  const hs=document.getElementById('heroSticker');
+  hs.insertAdjacentHTML('afterbegin', burst('#F2453D',16).replace('<svg','<svg style="position:absolute;inset:0;width:100%;height:100%;overflow:visible"'));
+  const words=['Tables','Chairs','Desks','Slides','Swings','Rockers','Ride-ons','See-saws','Ball pools','Fences'];
+  const row=words.map((w,i)=>`<span>${w}<i style="background:${BADGE[i%BADGE.length]}"></i></span>`).join('');
+  document.getElementById('marquee').innerHTML=row+row;
+  const chips=document.getElementById('chips');
+  chips.innerHTML=`<button class="chip on" data-k="all" style="--c:#1F1A3D">All<span class="n">${ALL.length}</span></button>`+
+    Object.entries(CATS).map(([k,v])=>`<button class="chip" data-k="${k}" style="--c:${v.c}">${v.title}<span class="n">${ALL.filter(p=>p.cat===k).length}</span></button>`).join('');
+  chips.onclick=e=>{const b=e.target.closest('.chip');if(!b)return;
+    chips.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c===b));
+    filter.cat=b.dataset.k;render();
+    const t=filter.cat==='all'?document.getElementById('catalogue'):document.getElementById(filter.cat);
+    window.scrollTo({top:t.getBoundingClientRect().top+scrollY-80,behavior:'smooth'});
+  };
+  document.getElementById('q').oninput=e=>{filter.q=e.target.value.trim().toLowerCase();render()};
+  render();
+}
+
+const filter={cat:'all',q:''};
+
+function render(){
+  const main=document.getElementById('catalogue');
+  let html='',n=0;flat=[];
+  Object.entries(CATS).forEach(([k,v],ci)=>{
+    if(filter.cat!=='all'&&filter.cat!==k)return;
+    const items=ALL.filter(p=>p.cat===k&&(!filter.q||(p.name+' '+p.code+' '+p.size).toLowerCase().includes(filter.q)));
+    if(!items.length)return;
+    const total=ALL.filter(p=>p.cat===k).length;
+    html+=`<section class="cat" id="${k}" style="--c:${v.c};--tint:${v.tint}" data-screen-label="0${ci+3} ${v.title}">
+      <div class="cat-head">
+        ${v.bg?`<div class="bg" style="background-image:url('${v.bg}')"></div>`:''}
+        <div><span class="cat-num">0${ci+1}</span><h2>${v.title.replace(' & ',' &amp;<br>')}</h2><p>${v.blurb}</p></div>
+        <div class="cat-count"><b>${total}</b>products</div>
+      </div>
+      <div class="grid">`+
+      items.map((p,i)=>{
+        const idx=flat.push(p)-1;
+        const bc=BADGE[(i+ci*2)%BADGE.length];
+        const big=p.price>=10000;
+        const notes=p.notes.map(t=>/colours available/.test(t)
+          ?`<span><span class="dots">${['#F2453D','#FFC93C','#3DBE6B','#2F7BF0'].slice(0,parseInt(t)).map(c=>`<i style="background:${c}"></i>`).join('')}</span>${t}</span>`
+          :`<span>${t}</span>`).join('');
+        return `<button class="card" data-i="${idx}" style="--tilt:${i%2?1:-1}deg">
+          <div class="price">${burst(bc)}<div class="t"><small>MRP</small><b class="${big?'sm':''}">${inr(p.price)}</b></div></div>
+          <div class="stage"><img loading="lazy" src="${p.img}" alt="${p.name}"></div>
+          <h3>${p.name}</h3>
+          <dl class="spec"><dt>Code</dt><dd>${p.code}</dd><dt>Size</dt><dd>${p.size}</dd></dl>
+          ${notes?`<div class="notes">${notes}</div>`:''}
+        </button>`;
+      }).join('')+`</div></section>`;
+    n+=items.length;
+  });
+  main.innerHTML=html;
+  document.getElementById('empty').style.display=n?'none':'block';
+}
+
+document.getElementById('catalogue').addEventListener('click',e=>{
+  const c=e.target.closest('.card');if(c)open(+c.dataset.i);
+});
+const modal=document.getElementById('modal');
+function open(i){
+  cur=(i+flat.length)%flat.length;const p=flat[cur],v=CATS[p.cat];
+  const s=document.getElementById('sheet');s.style.setProperty('--c',v.c);s.style.setProperty('--tint',v.tint);
+  document.getElementById('mImg').src=p.img;
+  document.getElementById('mImg').alt=p.name;
+  document.getElementById('mCat').textContent=v.title;
+  document.getElementById('mName').textContent=p.name;
+  document.getElementById('mPrice').textContent=inr(p.price);
+  document.getElementById('mSpec').innerHTML=
+    `<tr><td>Code</td><td>${p.code}</td></tr><tr><td>Size</td><td>${p.size}</td></tr>`+
+    (p.notes.length?`<tr><td>Details</td><td>${p.notes.join(' · ')}</td></tr>`:'');
+  modal.classList.add('open');document.body.style.overflow='hidden';
+}
+function close(){modal.classList.remove('open');document.body.style.overflow=''}
+document.getElementById('close').onclick=close;
+modal.onclick=e=>{if(e.target===modal)close()};
+document.getElementById('prev').onclick=()=>open(cur-1);
+document.getElementById('next').onclick=()=>open(cur+1);
+addEventListener('keydown',e=>{if(!modal.classList.contains('open'))return;
+  if(e.key==='Escape')close();if(e.key==='ArrowRight')open(cur+1);if(e.key==='ArrowLeft')open(cur-1)});
+</script>
+</body>
+</html>

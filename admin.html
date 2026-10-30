@@ -147,7 +147,7 @@ async function uploadImage(file) {
 
 window.app = {
   editProduct: async (code) => {
-    const res = await fetch(`/api/products/${code}`);
+    const res = await fetch(`/api/products?code=${encodeURIComponent(code)}`);
     const p = await res.json();
     editCode.value = p.code;
     document.getElementById('cat').value = p.cat;
@@ -162,7 +162,7 @@ window.app = {
   },
   deleteProduct: async (code) => {
     if (!confirm('Delete this product?')) return;
-    const res = await fetch(`/api/products/${code}`, { method: 'DELETE' });
+    const res = await fetch(`/api/products?code=${encodeURIComponent(code)}`, { method: 'DELETE' });
     if (!res.ok) { showMsg('Delete failed.', 'err'); return; }
     showMsg('Product deleted.', 'ok');
     load();
@@ -188,7 +188,7 @@ form.onsubmit = async (e) => {
   if (file) {
     imgUrl = await uploadImage(file);
   } else if (editCode.value) {
-    const res = await fetch(`/api/products/${editCode.value}`);
+    const res = await fetch(`/api/products?code=${encodeURIComponent(editCode.value)}`);
     const p = await res.json();
     imgUrl = p.img;
   }

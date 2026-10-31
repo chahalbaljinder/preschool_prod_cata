@@ -113,26 +113,31 @@ function showMsg(text, kind) {
 }
 
 async function load() {
-  const res = await fetch('/api/products');
-  const products = await res.json();
-  tbody.innerHTML = '';
-  if (!products.length) { empty.style.display = 'block'; return; }
-  empty.style.display = 'none';
-  products.forEach(p => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><img class="thumb" src="${p.img}" alt=""></td>
-      <td><code>${p.code}</code></td>
-      <td>${p.name}</td>
-      <td>${p.cat}</td>
-      <td>${p.price}</td>
-      <td>${p.size || '—'}</td>
-      <td class="actions">
-        <button class="btn btn-sm btn-primary" onclick="app.editProduct('${p.code}')">Edit</button>
-        <button class="btn btn-sm btn-danger" onclick="app.deleteProduct('${p.code}')">Delete</button>
-      </td>`;
-    tbody.appendChild(tr);
-  });
+  try {
+    const res = await fetch('/api/products');
+    const products = await res.json();
+    tbody.innerHTML = '';
+    if (!products.length) { empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    products.forEach(p => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><img class="thumb" src="${p.img}" alt=""></td>
+        <td><code>${p.code}</code></td>
+        <td>${p.name}</td>
+        <td>${p.cat}</td>
+        <td>${p.price}</td>
+        <td>${p.size || '—'}</td>
+        <td class="actions">
+          <button class="btn btn-sm btn-primary" onclick="app.editProduct('${p.code}')">Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="app.deleteProduct('${p.code}')">Delete</button>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+  } catch (err) {
+    showMsg('Failed to load products.', 'err');
+    console.error(err);
+  }
 }
 
 async function uploadImage(file) {
@@ -147,18 +152,26 @@ async function uploadImage(file) {
 
 window.app = {
   editProduct: async (code) => {
-    const res = await fetch(`/api/products?code=${encodeURIComponent(code)}`);
-    const p = await res.json();
-    editCode.value = p.code;
-    document.getElementById('cat').value = p.cat;
-    document.getElementById('code').value = p.code;
-    document.getElementById('name').value = p.name;
-    document.getElementById('size').value = p.size || '';
-    document.getElementById('price').value = p.price;
-    document.getElementById('notes').value = (p.notes || []).join(', ');
-    submitBtn.textContent = 'Update Product';
-    cancelBtn.style.display = 'inline-block';
-    form.scrollIntoView({ behavior: 'smooth' });
+    try {
+      const res = await fetch(`/api/products?code=${encodeURIComponent(code)}`);
+      const p = await res.json();
+      if (!res.ok) throw new Error(p.error || 'Failed to load product');
+      const product = Array.isArray(p) ? p[0] : p;
+      if (!product) throw new Error('Product not found');
+      editCode.value = product.code;
+      document.getElementById('cat').value = product.cat;
+      document.getElementById('code').value = product.code;
+      document.getElementById('name').value = product.name;
+      document.getElementById('size').value = product.size || '';
+      document.getElementById('price').value = product.price;
+      document.getElementById('notes').value = (product.notes || []).join(', ');
+      submitBtn.textContent = 'Update Product';
+      cancelBtn.style.display = 'inline-block';
+      form.scrollIntoView({ behavior: 'smooth' });
+    } catch (err) {
+      showMsg(err.message, 'err');
+      console.error(err);
+    }
   },
   deleteProduct: async (code) => {
     if (!confirm('Delete this product?')) return;
@@ -188,9 +201,12 @@ form.onsubmit = async (e) => {
   if (file) {
     imgUrl = await uploadImage(file);
   } else if (editCode.value) {
-    const res = await fetch(`/api/products?code=${encodeURIComponent(editCode.value)}`);
-    const p = await res.json();
-    imgUrl = p.img;
+    try {
+      const res = await fetch(`/api/products?code=${encodeURIComponent(editCode.value)}`);
+      const p = await res.json();
+      const product = Array.isArray(p) ? p[0] : p;
+      imgUrl = product ? product.img : '';
+    } catch {}
   }
 
   const body = {

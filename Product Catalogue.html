@@ -325,7 +325,7 @@ function render(){
   let html='',n=0;flat=[];
   Object.entries(CATS).forEach(([k,v],ci)=>{
     if(filter.cat!=='all'&&filter.cat!==k)return;
-    const items=ALL.filter(p=>p.cat===k&&(!filter.q||(p.name+' '+p.code+' '+p.size).toLowerCase().includes(filter.q)));
+    const items=ALL.filter(p=>p.cat===k&&(!filter.q||(p.name+' '+p.code+' '+p.size).toLowerCase().includes(filter.q))).sort((a,b)=>(a.name||'').localeCompare(b.name||''));
     if(!items.length)return;
     const total=ALL.filter(p=>p.cat===k).length;
     html+=`<section class="cat" id="${k}" style="--c:${v.c};--tint:${v.tint}" data-screen-label="0${ci+3} ${v.title}">

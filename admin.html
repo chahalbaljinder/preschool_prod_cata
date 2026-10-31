@@ -46,6 +46,14 @@ textarea { resize: vertical; min-height: 56px; }
 <div class="maxw">
   <h1>Product Admin</h1>
   <div id="msg" class="msg"></div>
+  <div class="filterbar" style="margin:12px 0 8px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+    <input type="text" id="searchInput" placeholder="Search code or name…" style="padding:8px 10px; border:1px solid #d1d5db; border-radius:4px; width:260px; font-size:13px;">
+    <select id="catFilter" style="padding:8px 10px; border:1px solid #d1d5db; border-radius:4px; font-size:13px;">
+      <option value="">All categories</option>
+    </select>
+    <button class="btn btn-primary" id="clearFilters" style="padding:8px 12px;">Clear filters</button>
+    <span id="filterCount" style="font-size:12px; color:#6b7280; margin-left:auto;"></span>
+  </div>
   <div id="okModal" class="modal" style="display:none">
     <div class="modal-backdrop" onclick="closeOkModal()"></div>
     <div class="modal-card" onclick="event.stopPropagation()">
@@ -121,6 +129,13 @@ const editCode = document.getElementById('editCode');
 const submitBtn = document.getElementById('submitBtn');
 const cancelBtn = document.getElementById('cancelBtn');
 const empty = document.getElementById('empty');
+const searchInput = document.getElementById('searchInput');
+const catFilter = document.getElementById('catFilter');
+const clearFilters = document.getElementById('clearFilters');
+const filterCount = document.getElementById('filterCount');
+let allProducts = [];
+let currentSearch = '';
+let currentCat = '';
 
 function showMsg(text, kind) {
   msg.textContent = text;
@@ -134,6 +149,8 @@ function closeOkModal() {
 }
 
 function updateRowInTable(product) {
+  const idx = allProducts.findIndex(p => p.code === product.code);
+  if (idx !== -1) allProducts[idx] = product;
   const rows = tbody.querySelectorAll('tr');
   for (const tr of rows) {
     const codeCell = tr.querySelector('td code');
@@ -159,29 +176,69 @@ async function load() {
   try {
     const res = await fetch('/api/products');
     const products = await res.json();
-    tbody.innerHTML = '';
-    if (!products.length) { empty.style.display = 'block'; return; }
-    empty.style.display = 'none';
-    products.forEach(p => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><img class="thumb" src="${p.img}" alt=""></td>
-        <td><code>${p.code}</code></td>
-        <td>${p.name}</td>
-        <td>${p.cat}</td>
-        <td>${p.price}</td>
-        <td>${p.size || '—'}</td>
-        <td class="actions">
-          <button class="btn btn-sm btn-primary" onclick="app.editProduct('${p.code}')">Edit</button>
-          <button class="btn btn-sm btn-danger" onclick="app.deleteProduct('${p.code}')">Delete</button>
-        </td>`;
-      tbody.appendChild(tr);
-    });
+    allProducts = products || [];
+    buildCatFilter();
+    render();
   } catch (err) {
     showMsg('Failed to load products.', 'err');
     console.error(err);
   }
 }
+
+function buildCatFilter() {
+  const cats = new Set(allProducts.map(p => p.cat).filter(Boolean));
+  catFilter.innerHTML = '<option value="">All categories</option>';
+  [...cats].sort().forEach(c => {
+    const o = document.createElement('option');
+    o.value = c;
+    o.textContent = c;
+    catFilter.appendChild(o);
+  });
+}
+
+function render() {
+  const term = currentSearch.toLowerCase();
+  const filtered = allProducts.filter(p => {
+    const matchSearch = !term ||
+      (p.code && p.code.toLowerCase().includes(term)) ||
+      (p.name && p.name.toLowerCase().includes(term));
+    const matchCat = !currentCat || p.cat === currentCat;
+    return matchSearch && matchCat;
+  });
+
+  tbody.innerHTML = '';
+  filterCount.textContent = `${filtered.length} of ${allProducts.length} products`;
+  if (!filtered.length) {
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  filtered.forEach(p => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><img class="thumb" src="${p.img}" alt=""></td>
+      <td><code>${p.code}</code></td>
+      <td>${p.name}</td>
+      <td>${p.cat}</td>
+      <td>${p.price}</td>
+      <td>${p.size || '—'}</td>
+      <td class="actions">
+        <button class="btn btn-sm btn-primary" onclick="app.editProduct('${p.code}')">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="app.deleteProduct('${p.code}')">Delete</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+searchInput.oninput = () => { currentSearch = searchInput.value; render(); };
+catFilter.onchange = () => { currentCat = catFilter.value; render(); };
+clearFilters.onclick = () => {
+  searchInput.value = '';
+  catFilter.value = '';
+  currentSearch = '';
+  currentCat = '';
+  render();
+};
 
 async function uploadImage(file) {
   const fileName = `${Date.now()}-${Math.round(Math.random()*1e9)}${file.name}`;

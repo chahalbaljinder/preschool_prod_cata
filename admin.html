@@ -32,6 +32,13 @@ textarea { resize: vertical; min-height: 56px; }
 .actions { display: flex; gap: 8px; }
 .cancel { display: none; background: #e5e7eb; color: #374151; }
 .cancel:hover { background: #d1d5db; }
+.modal { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,.45); }
+.modal-backdrop { position: absolute; inset: 0; }
+.modal-card { background: #fff; border-radius: 8px; padding: 24px; min-width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,.2); position: relative; z-index: 51; text-align: center; }
+.modal-title { font-size: 16px; font-weight: 700; margin-bottom: 10px; color: #111827; }
+.modal-body { font-size: 14px; color: #374151; margin-bottom: 18px; min-height: 20px; }
+.modal-footer { display: flex; justify-content: center; }
+@media (max-width: 768px) { .modal-card { min-width: auto; width: 88%; margin: 0 16px; } }
 @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } form { position: static; } }
 </style>
 </head>
@@ -39,6 +46,16 @@ textarea { resize: vertical; min-height: 56px; }
 <div class="maxw">
   <h1>Product Admin</h1>
   <div id="msg" class="msg"></div>
+  <div id="okModal" class="modal" style="display:none">
+    <div class="modal-backdrop" onclick="closeOkModal()"></div>
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-title">Saved</div>
+      <div class="modal-body" id="okModalBody">Product updated successfully.</div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="closeOkModal()">OK</button>
+      </div>
+    </div>
+  </div>
   <div class="grid">
     <div>
       <table>
@@ -110,6 +127,32 @@ function showMsg(text, kind) {
   msg.className = 'msg ' + kind;
   msg.style.display = 'block';
   setTimeout(() => { msg.style.display = 'none'; }, 4000);
+}
+
+function closeOkModal() {
+  document.getElementById('okModal').style.display = 'none';
+}
+
+function updateRowInTable(product) {
+  const rows = tbody.querySelectorAll('tr');
+  for (const tr of rows) {
+    const codeCell = tr.querySelector('td code');
+    if (!codeCell) continue;
+    if (codeCell.textContent.trim() === product.code) {
+      tr.innerHTML = `
+        <td><img class="thumb" src="${product.img}" alt=""></td>
+        <td><code>${product.code}</code></td>
+        <td>${product.name}</td>
+        <td>${product.cat}</td>
+        <td>${product.price}</td>
+        <td>${product.size || '—'}</td>
+        <td class="actions">
+          <button class="btn btn-sm btn-primary" onclick="app.editProduct('${product.code}')">Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="app.deleteProduct('${product.code}')">Delete</button>
+        </td>`;
+      return;
+    }
+  }
 }
 
 async function load() {
@@ -230,9 +273,16 @@ form.onsubmit = async (e) => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'failed');
     showMsg(isEdit ? 'Product updated.' : 'Product added.', 'ok');
+    const modalBody = document.getElementById('okModalBody');
+    modalBody.textContent = isEdit ? 'Product updated successfully.' : 'Product added successfully.';
+    document.getElementById('okModal').style.display = 'flex';
     form.reset(); editCode.value = '';
     submitBtn.textContent = 'Save Product'; cancelBtn.style.display = 'none';
-    load();
+    if (isEdit) {
+      updateRowInTable(data);
+    } else {
+      load();
+    }
   } catch (err) {
     showMsg(err.message, 'err');
   }

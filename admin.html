@@ -219,7 +219,7 @@ form.onsubmit = async (e) => {
     notes: notes.split(',').map(s => s.trim()).filter(Boolean)
   };
   const isEdit = !!editCode.value;
-  const url = isEdit ? `/api/products/${editCode.value}` : '/api/products';
+  const url = isEdit ? `/api/products?code=${encodeURIComponent(editCode.value)}` : '/api/products';
 
   try {
     const res = await fetch(url, {

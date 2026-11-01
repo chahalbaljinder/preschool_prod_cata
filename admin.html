@@ -321,11 +321,7 @@ form.onsubmit = async (e) => {
     document.getElementById('okModal').style.display = 'flex';
     form.reset(); editCode.value = ''; currentProduct = null;
     submitBtn.textContent = 'Save Product'; cancelBtn.style.display = 'none';
-    if (isEdit) {
-      updateRowInTable(data);
-    } else {
-      load();
-    }
+    load();
   } catch (err) {
     showMsg(err.message, 'err');
   }

@@ -356,7 +356,7 @@ form.onsubmit = async (e) => {
   };
   const isEdit = !!editCode.value;
   const url = isEdit ? `/api/products?code=${encodeURIComponent(editCode.value)}` : '/api/products';
-  if (!isEdit) body.code = code;
+  body.code = code;
 
   try {
     let res = await fetch(url, {

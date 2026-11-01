@@ -65,6 +65,17 @@ textarea { resize: vertical; min-height: 56px; }
       </div>
     </div>
   </div>
+  <div id="dupModal" class="modal" style="display:none">
+    <div class="modal-backdrop" onclick="closeDupModal()"></div>
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-title">Code Already Exists</div>
+      <div class="modal-body" id="dupModalBody"></div>
+      <div class="modal-footer" style="justify-content:center; gap:8px">
+        <button class="btn btn-danger" onclick="closeDupModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="proceedWithDuplicate()">Save Anyway</button>
+      </div>
+    </div>
+  </div>
   <div class="grid">
     <div>
       <table>
@@ -150,6 +161,43 @@ function closeOkModal() {
   document.getElementById('okModal').style.display = 'none';
 }
 
+let allowDuplicate = false;
+
+function closeDupModal() {
+  document.getElementById('dupModal').style.display = 'none';
+  allowDuplicate = false;
+}
+
+function proceedWithDuplicate() {
+  allowDuplicate = true;
+  closeDupModal();
+  form.dispatchEvent(new Event('submit', { cancelable: true }));
+}
+
+async function checkCodeExists(code) {
+  const res = await fetch(`/api/products?code=${encodeURIComponent(code)}`);
+  const p = await res.json();
+  const product = Array.isArray(p) ? p[0] : p;
+  return product || null;
+}
+
+async function handleDupCheck(code) {
+  if (allowDuplicate) return true;
+  const existing = await checkCodeExists(code);
+  if (!existing) return true;
+  const isEditingSame = editCode.value && editCode.value === code;
+  if (isEditingSame) return true;
+  const body = `
+    <strong>Code:</strong> ${existing.code}<br>
+    <strong>Name:</strong> ${existing.name}<br>
+    <strong>Category:</strong> ${existing.cat}<br>
+    <strong>Price:</strong> ₹${existing.price}
+  `;
+  document.getElementById('dupModalBody').innerHTML = `A product with this code already exists:<br><br>${body}<br><br>Do you want to save anyway?`;
+  document.getElementById('dupModal').style.display = 'flex';
+  return false;
+}
+
 function updateRowInTable(product) {
   const idx = allProducts.findIndex(p => p.code === product.code);
   if (idx !== -1) allProducts[idx] = product;
@@ -225,6 +273,12 @@ clearFilters.onclick = () => {
   render();
 };
 
+document.getElementById('code').onblur = async () => {
+  const code = document.getElementById('code').value.trim();
+  if (!code) return;
+  await handleDupCheck(code);
+};
+
 async function uploadImage(file) {
   const safeName = file.name.replace(/[^a-zA-Z0-9.\-]/g, '_');
   const fileName = `${Date.now()}-${Math.round(Math.random()*1e9)}${safeName}`;
@@ -276,8 +330,10 @@ cancelBtn.onclick = () => {
 
 form.onsubmit = async (e) => {
   e.preventDefault();
+  const code = document.getElementById('code').value.trim();
+  if (!code) { showMsg('Product code is required.', 'err'); return; }
+  if (!(await handleDupCheck(code))) return;
   const cat = document.getElementById('cat').value;
-  const code = document.getElementById('code').value;
   const name = document.getElementById('name').value;
   const size = document.getElementById('size').value;
   const price = document.getElementById('price').value;

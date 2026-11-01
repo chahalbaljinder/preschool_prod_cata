@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nyftaa · Product Admin</title>
+<link rel="icon" href="assets/svgviewer-png-output (2).png">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f3f4f6; color: #111827; padding: 24px; }
@@ -129,6 +130,7 @@ const editCode = document.getElementById('editCode');
 const submitBtn = document.getElementById('submitBtn');
 const cancelBtn = document.getElementById('cancelBtn');
 const empty = document.getElementById('empty');
+let currentProduct = null;
 const searchInput = document.getElementById('searchInput');
 const catFilter = document.getElementById('catFilter');
 const clearFilters = document.getElementById('clearFilters');
@@ -259,6 +261,7 @@ window.app = {
       if (!res.ok) throw new Error(p.error || 'Failed to load product');
       const product = Array.isArray(p) ? p[0] : p;
       if (!product) throw new Error('Product not found');
+      currentProduct = product;
       editCode.value = product.code;
       document.getElementById('cat').value = product.cat;
       document.getElementById('code').value = product.code;
@@ -284,7 +287,7 @@ window.app = {
 };
 
 cancelBtn.onclick = () => {
-  form.reset(); editCode.value = '';
+  form.reset(); editCode.value = ''; currentProduct = null;
   submitBtn.textContent = 'Save Product'; cancelBtn.style.display = 'none';
 };
 
@@ -298,16 +301,9 @@ form.onsubmit = async (e) => {
   const notes = document.getElementById('notes').value;
   const file = document.getElementById('image').files[0];
 
-  let imgUrl = '';
+  let imgUrl = currentProduct ? currentProduct.img : '';
   if (file) {
     imgUrl = await uploadImage(file);
-  } else if (editCode.value) {
-    try {
-      const res = await fetch(`/api/products?code=${encodeURIComponent(editCode.value)}`);
-      const p = await res.json();
-      const product = Array.isArray(p) ? p[0] : p;
-      imgUrl = product ? product.img : '';
-    } catch {}
   }
 
   const body = {
@@ -320,21 +316,28 @@ form.onsubmit = async (e) => {
     notes: notes.split(',').map(s => s.trim()).filter(Boolean)
   };
   const isEdit = !!editCode.value;
-  const url = isEdit ? `/api/products?code=${encodeURIComponent(editCode.value)}` : '/api/products';
+  const url = isEdit ? `/api/products?code=${encodeURIComponent(code)}` : '/api/products';
 
   try {
-    const res = await fetch(url, {
+    let res = await fetch(url, {
       method: isEdit ? 'PUT' : 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
+    if (isEdit && res.status === 404) {
+      res = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+    }
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'failed');
     showMsg(isEdit ? 'Product updated.' : 'Product added.', 'ok');
     const modalBody = document.getElementById('okModalBody');
     modalBody.textContent = isEdit ? 'Product updated successfully.' : 'Product added successfully.';
     document.getElementById('okModal').style.display = 'flex';
-    form.reset(); editCode.value = '';
+    form.reset(); editCode.value = ''; currentProduct = null;
     submitBtn.textContent = 'Save Product'; cancelBtn.style.display = 'none';
     if (isEdit) {
       updateRowInTable(data);

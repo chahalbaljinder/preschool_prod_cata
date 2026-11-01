@@ -153,25 +153,7 @@ function closeOkModal() {
 function updateRowInTable(product) {
   const idx = allProducts.findIndex(p => p.code === product.code);
   if (idx !== -1) allProducts[idx] = product;
-  const rows = tbody.querySelectorAll('tr');
-  for (const tr of rows) {
-    const codeCell = tr.querySelector('td code');
-    if (!codeCell) continue;
-    if (codeCell.textContent.trim() === product.code) {
-      tr.innerHTML = `
-        <td><img class="thumb" src="${product.img}" alt=""></td>
-        <td><code>${product.code}</code></td>
-        <td>${product.name}</td>
-        <td>${product.cat}</td>
-        <td>${product.price}</td>
-        <td>${product.size || '—'}</td>
-        <td class="actions">
-          <button class="btn btn-sm btn-primary" onclick="app.editProduct('${product.code}')">Edit</button>
-          <button class="btn btn-sm btn-danger" onclick="app.deleteProduct('${product.code}')">Delete</button>
-        </td>`;
-      return;
-    }
-  }
+  render();
 }
 
 async function load() {

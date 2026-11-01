@@ -241,7 +241,8 @@ clearFilters.onclick = () => {
 };
 
 async function uploadImage(file) {
-  const fileName = `${Date.now()}-${Math.round(Math.random()*1e9)}${file.name}`;
+  const safeName = file.name.replace(/[^a-zA-Z0-9.\-]/g, '_');
+  const fileName = `${Date.now()}-${Math.round(Math.random()*1e9)}${safeName}`;
   const { error } = await supabaseClient.storage
     .from('products')
     .upload(fileName, file, { cacheControl: '3600', upsert: false });

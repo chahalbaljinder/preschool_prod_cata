@@ -169,13 +169,14 @@ function closeDupModal() {
 }
 
 function proceedWithDuplicate() {
+  document.getElementById('dupModal').style.display = 'none';
   allowDuplicate = true;
-  closeDupModal();
   form.dispatchEvent(new Event('submit', { cancelable: true }));
 }
 
 async function checkCodeExists(code) {
   const res = await fetch(`/api/products?code=${encodeURIComponent(code)}`);
+  if (!res.ok) return null;
   const p = await res.json();
   const product = Array.isArray(p) ? p[0] : p;
   return product || null;

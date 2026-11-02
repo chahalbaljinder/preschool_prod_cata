@@ -72,6 +72,7 @@ textarea { resize: vertical; min-height: 56px; }
       <div class="modal-body" id="dupModalBody"></div>
       <div class="modal-footer" style="justify-content:center; gap:8px">
         <button class="btn btn-danger" onclick="closeDupModal()">Cancel</button>
+        <button class="btn btn-primary" style="background:#2F7BF0" onclick="useSuggestedCode()">Use suggested code</button>
         <button class="btn btn-primary" onclick="proceedWithDuplicate()">Save Anyway</button>
       </div>
     </div>
@@ -162,16 +163,33 @@ function closeOkModal() {
 }
 
 let allowDuplicate = false;
+let suggestedCode = '';
 
 function closeDupModal() {
   document.getElementById('dupModal').style.display = 'none';
   allowDuplicate = false;
+  suggestedCode = '';
 }
 
 function proceedWithDuplicate() {
   document.getElementById('dupModal').style.display = 'none';
   allowDuplicate = true;
   form.dispatchEvent(new Event('submit', { cancelable: true }));
+}
+
+function useSuggestedCode() {
+  document.getElementById('code').value = suggestedCode;
+  closeDupModal();
+}
+
+async function suggestSimilarCode(code) {
+  let num = 1;
+  let candidate = `${code}_${num}`;
+  while (await checkCodeExists(candidate)) {
+    num++;
+    candidate = `${code}_${num}`;
+  }
+  return candidate;
 }
 
 async function checkCodeExists(code) {
@@ -188,13 +206,19 @@ async function handleDupCheck(code) {
   if (!existing) return true;
   const isEditingSame = editCode.value && editCode.value === code;
   if (isEditingSame) return true;
+  const similar = await suggestSimilarCode(code);
+  suggestedCode = similar;
   const body = `
     <strong>Code:</strong> ${existing.code}<br>
     <strong>Name:</strong> ${existing.name}<br>
     <strong>Category:</strong> ${existing.cat}<br>
     <strong>Price:</strong> ₹${existing.price}
   `;
-  document.getElementById('dupModalBody').innerHTML = `A product with this code already exists:<br><br>${body}<br><br>Do you want to save anyway?`;
+  document.getElementById('dupModalBody').innerHTML = `
+    A product with this code already exists:<br><br>${body}<br><br>
+    Suggested similar code: <strong style="color:#2F7BF0">${similar}</strong><br><br>
+    Do you want to save anyway?
+  `;
   document.getElementById('dupModal').style.display = 'flex';
   return false;
 }
